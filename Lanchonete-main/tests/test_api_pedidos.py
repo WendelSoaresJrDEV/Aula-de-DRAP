@@ -54,3 +54,16 @@ def test_fluxo_completo_pedido(client):
     r3 = client.post(f"/lanchonete/pedidos/{cod_pedido}/finalizar")
     assert r3.status_code == 200
     assert r3.json()["total"] == 29.0
+
+def test_pedido_buscar_codigo(client):
+
+    client.post("/clientes", json={"cpf": "11122233344", "nome": "Cliente X"})
+
+    client.post("/produtos", json={"codigo": 1, "valor": 10, "tipo": 1, "desconto_percentual": 10})
+
+    r = client.post("/lanchonete/pedidos", json={"cpf": "11122233344", "cod_produto": 1, "qtd_max_produtos": 10})
+    assert r.status_code == 200
+    cod_pedido = r.json()["codigo"]
+
+    r2 = client.get(f"/lanchonete/pedidos/{cod_pedido}")
+    assert r2.status_code == 200
